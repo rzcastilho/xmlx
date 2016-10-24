@@ -1,7 +1,7 @@
 defmodule Xmlx.Common do
 
   @moduledoc """
-  
+  Reusable operations through Xmlx application.
   """
 
   @doc """
@@ -15,9 +15,9 @@ defmodule Xmlx.Common do
   end
 
   @doc """
-  Return a map with all namespace declarations from passed string.
+  Return a list with all namespace declarations from passed string.
   """
-  @spec get_namespaces(String) :: Map
+  @spec get_namespaces(String) :: List
   def get_namespaces(xml) do
     ~r/ xmlns(:(?<alias>[a-zA-Z0-9]+))?=("(?<namespace_double>[^"]+)"|'(?<namespace_single>[^']+)')/
       |> Regex.scan(xml, [capture: [:alias, :namespace_double, :namespace_single]])

@@ -1,13 +1,13 @@
 defmodule Xmlx.Parser do
 
   @moduledoc """
-
+  Xmlx.Parser Module
   """
 
   import Xmlx.Common
 
   @doc """
-  Parse XML
+  Parse XML in a structured list with key values
   """
   @spec parse(String) :: List
   def parse(xml) do

@@ -1,18 +1,18 @@
 defmodule Xmlx.Convert do
 
   @moduledoc """
-
+  Xmlx.Convert Module
   """
 
   @doc """
-  Convert given document to json format
+  TODO: Convert given document to json format
   """
   def to_json(document) do
 
   end
 
   @doc """
-  Convert given document to xml format
+  TODO: Convert given document to xml format
   """
   def to_xml(document) do
 
