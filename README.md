@@ -24,7 +24,7 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 
 ## Usage
 
-  XML Example
+### XML Example (simple.xml)
   ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <note>
@@ -40,12 +40,8 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
     File.read!("simple.xml") |> Xmlx.parse()
     ```
     ```
-[note: [__namespace__: nil, __attrs__: [],
-  to: [__namespace__: nil, __attrs__: [], text: "Tove"],
-  from: [__namespace__: nil, __attrs__: [], text: "Jani"],
-  heading: [__namespace__: nil, __attrs__: [], text: "Reminder"],
-  body: [__namespace__: nil, __attrs__: [],
-   text: "Don't forget me this weekend!"]]]
+[note: [to: [text: "Tove"], from: [text: "Jani"], heading: [text: "Reminder"],
+  body: [text: "Don't forget me this weekend!"]]]
     ```
 
   2. Find element/attribute
@@ -53,5 +49,104 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
     File.read!("simple.xml") |> Xmlx.parse() |> Xmlx.find(:from)
     ```
     ```
-[from: [__namespace__: nil, __attrs__: [], text: "Jani"]]
+[from: [text: "Jani"]]
+    ```
+
+### WSDL Example (simple.wsdl)
+  ```xml
+<?xml version="1.0"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.examples.com/wsdl/HelloService.wsdl" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="HelloService" targetNamespace="http://www.examples.com/wsdl/HelloService.wsdl">
+  <message name="SayHelloRequest">
+    <part name="firstName" type="xsd:string"/>
+  </message>
+  <message name="SayHelloResponse">
+    <part name="greeting" type="xsd:string"/>
+  </message>
+  <portType name="Hello_PortType">
+    <operation name="sayHello">
+      <input message="tns:SayHelloRequest"/>
+      <output message="tns:SayHelloResponse"/>
+    </operation>
+  </portType>
+  <binding name="Hello_Binding" type="tns:Hello_PortType">
+    <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="sayHello">
+      <soap:operation soapAction="sayHello"/>
+      <input>
+        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:examples:helloservice" use="encoded"/>
+      </input>
+      <output>
+        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:examples:helloservice" use="encoded"/>
+      </output>
+    </operation>
+  </binding>
+  <service name="Hello_Service">
+    <documentation>WSDL File for HelloService</documentation>
+    <port binding="tns:Hello_Binding" name="Hello_Port">
+      <soap:address location="http://www.examples.com/SayHello/"/>
+    </port>
+  </service>
+</definitions>
+  ```
+
+  1. Document parse
+    ```elixir
+    File.read!("simple.wsdl") |> Xmlx.parse()
+    ```
+    ```
+[definitions: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
+  __attrs__: [name: "HelloService",
+   targetNamespace: "http://www.examples.com/wsdl/HelloService.wsdl"],
+  message: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
+   __attrs__: [name: "SayHelloRequest"],
+   part: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
+    __attrs__: [name: "firstName", type: "xsd:string"]]],
+  message: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
+   __attrs__: [name: "SayHelloResponse"],
+   part: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
+    __attrs__: [name: "greeting", type: "xsd:string"]]],
+  portType: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
+   __attrs__: [name: "Hello_PortType"],
+   operation: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
+    __attrs__: [name: "sayHello"],
+    input: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
+     __attrs__: [message: "tns:SayHelloRequest"]],
+    output: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
+     __attrs__: [message: "tns:SayHelloResponse"]]]],
+  binding: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
+   __attrs__: [name: "Hello_Binding", type: "tns:Hello_PortType"],
+   binding: [__namespace__: "http://schemas.xmlsoap.org/wsdl/soap/",
+    __attrs__: [style: "rpc",
+     transport: "http://schemas.xmlsoap.org/soap/http"]],
+   operation: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
+    __attrs__: [name: "sayHello"],
+    operation: [__namespace__: "http://schemas.xmlsoap.org/wsdl/soap/",
+     __attrs__: [soapAction: "sayHello"]],
+    input: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
+     body: [__namespace__: "http://schemas.xmlsoap.org/wsdl/soap/",
+      __attrs__: [encodingStyle: "http://schemas.xmlsoap.org/soap/encoding/",
+       namespace: "urn:examples:helloservice", use: "encoded"]]],
+    output: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
+     body: [__namespace__: "http://schemas.xmlsoap.org/wsdl/soap/",
+      __attrs__: [encodingStyle: "http://schemas.xmlsoap.org/soap/encoding/",
+       namespace: "urn:examples:helloservice", use: "encoded"]]]]],
+  service: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
+   __attrs__: [name: "Hello_Service"],
+   documentation: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
+    text: "WSDL File for HelloService"],
+   port: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
+    __attrs__: [binding: "tns:Hello_Binding", name: "Hello_Port"],
+    address: [__namespace__: "http://schemas.xmlsoap.org/wsdl/soap/",
+     __attrs__: [location: "http://www.examples.com/SayHello/"]]]]]]
+    ```
+
+  2. Find element/attribute
+    ```elixir
+    File.read!("simple.wsdl") |> Xmlx.parse() |> Xmlx.find(:port)
+    ```
+    ```
+[port: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
+  __attrs__: [binding: "tns:Hello_Binding", name: "Hello_Port"],
+  address: [__namespace__: "http://schemas.xmlsoap.org/wsdl/soap/",
+   __attrs__: [location: "http://www.examples.com/SayHello/"]]]]
     ```
