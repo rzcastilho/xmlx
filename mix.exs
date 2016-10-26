@@ -2,7 +2,7 @@ defmodule Xmlx.Mixfile do
   use Mix.Project
 
   @description "Xmlx is a XML parser that enables search using attribute or element names."
-  @version "0.0.1"
+  @version "0.0.2"
 
   def project do
     [app: :xmlx,
