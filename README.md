@@ -24,7 +24,7 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 
 ## Usage
 
-  XML Example (simple.xml)
+### XML Example (simple.xml)
   ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <note>
@@ -52,7 +52,7 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 [from: [text: "Jani"]]
     ```
 
-  WSDL Example (simple.wsdl)
+### WSDL Example (simple.wsdl)
   ```xml
 <?xml version="1.0"?>
 <definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.examples.com/wsdl/HelloService.wsdl" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="HelloService" targetNamespace="http://www.examples.com/wsdl/HelloService.wsdl">
