@@ -63,7 +63,7 @@ defmodule Xmlx.Parser do
     attrs = get_attributes(value, nss)
     namespace = resolve_namespace_from_alias(nss, String.to_atom(ns_alias))
     name = if namespace != nil, do: "{" <> namespace <> "}" <> name, else: name
-    build(t, path ++ [String.to_atom(name)], nss, put(result, path, name, attrs, namespace, :open))
+    build(t, path ++ [String.to_atom(name)], nss, put(result, path, name, attrs, :open))
   end
 
   defp build([{:close, value}|t], path, ns_stack, result) do
@@ -84,18 +84,18 @@ defmodule Xmlx.Parser do
     attrs = get_attributes(value, nss)
     namespace = resolve_namespace_from_alias(nss, String.to_atom(ns_alias))
     name = if namespace != nil, do: "{" <> namespace <> "}" <> name, else: name
-    build(t, path, ns_stack, put(result, path, name, attrs, namespace, :open_close))
+    build(t, path, ns_stack, put(result, path, name, attrs, :open_close))
   end
 
   defp build([{action, value}|t], path, ns_stack, result) do
-    build(t, path, ns_stack, put(result, path, value, [], "", action))
+    build(t, path, ns_stack, put(result, path, value, [], action))
   end
 
   defp build([], _path, _ns_stack, result) do
     result
   end
 
-  defp put(result, [], name, attrs, namespace, action, current_key, stack) do
+  defp put(result, [], name, attrs, action, current_key, stack) do
     node = result ++ if action == :value, do: [{:text, name}], else: build_node_structure(name, attrs)
     if Enum.count(stack) == 1 do
       [{current_key, node}]
@@ -112,9 +112,9 @@ defmodule Xmlx.Parser do
     end
   end
 
-  defp put(result, path, name, attrs, namespace, action \\ "", _current_key \\ "", stack \\ []) do
+  defp put(result, path, name, attrs, action \\ "", _current_key \\ "", stack \\ []) do
     node = [{List.first(path), Keyword.get(result, List.first(path))}]
-    put(List.last(Keyword.get_values(result, List.first(path))), path -- [List.first(path)], name, attrs, namespace, action, List.first(path), node ++ stack)
+    put(List.last(Keyword.get_values(result, List.first(path))), path -- [List.first(path)], name, attrs, action, List.first(path), node ++ stack)
   end
 
   defp build_node_structure(node_name, []) do
@@ -122,7 +122,6 @@ defmodule Xmlx.Parser do
   end
 
   defp build_node_structure(node_name, attrs) do
-    #[{String.to_atom(node_name), [{:__attrs__, attrs}]}]
     [{String.to_atom(node_name), attrs}]
   end
 
@@ -141,7 +140,7 @@ defmodule Xmlx.Parser do
       |> Enum.map(&(List.delete(&1, "") |> (fn(v) -> {String.to_atom(resolve_alias_attribute(Enum.at(v, 0), namespaces, :attr_name)), resolve_alias_attribute(Enum.at(v, 1), namespaces)} end).()))
   end
 
-  defp resolve_alias_attribute(attr, namespaces) do
+  defp resolve_alias_attribute(attr, _namespaces) do
     attr
   end
 

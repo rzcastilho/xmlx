@@ -5,16 +5,16 @@ defmodule Xmlx.Format do
   """
 
   @doc """
-  TODO: Format given document to json format.
+  Format given document in xml format.
   """
-  def to_json(document) do
+  def to_xml(document, output) do
 
   end
 
   @doc """
-  TODO: Format given document to xml format.
+  Format given document in json format.
   """
-  def to_xml(document) do
+  def to_json(document, output) do
 
   end
 

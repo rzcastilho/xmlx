@@ -2,7 +2,7 @@ defmodule Xmlx.Mixfile do
   use Mix.Project
 
   @description "Elixir native XML parser that enables search using attribute or element names"
-  @version "0.1.0"
+  @version "0.2.0"
 
   def project do
     [app: :xmlx,
