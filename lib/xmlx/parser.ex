@@ -1,10 +1,21 @@
 defmodule Xmlx.Parser do
 
   @moduledoc """
-  Xmlx.Parser Module
+  Parser functions
   """
 
   import Xmlx.Common
+
+  @s_char "[" <> <<0x9 :: utf8>> <> "|" <> <<0xA :: utf8>> <> "|" <> <<0xD :: utf8>> <> "|" <> <<0x20 :: utf8>> <> "-" <> <<0xD7FF :: utf8>> <> "|" <> <<0xE000 :: utf8>> <> "-" <> <<0xFFFD :: utf8>> <> "|" <> <<0x10000 :: utf8>> <> "-" <> <<0x10FFFF :: utf8>> <> "]"
+  @s_tag_open_content_close "(?<open><[^\\!\\?>]+>)(?<value><\\!\\[CDATA\\[" <> @s_char <> "*\\]\\]>|[^<>]+)(?<close><\/[^>]+>)"
+  @s_tag_close "<\/[^>]+>"
+  @s_tag_open "<[^\\!\\?>]+>"
+  @s_tags @s_tag_open_content_close <> "|" <> @s_tag_close <> "|" <> @s_tag_open
+
+  @re_tags Regex.compile!(@s_tags, [:unicode])
+  @re_tag_open_content_close Regex.compile!(@s_tag_open_content_close, [:unicode])
+  @re_attributes ~r/[[:blank:]]+(?<name>[^=]+)="(?<value_double>[^"]+)"|'(?<value_single>[^']+)'/
+  @re_namespace ~r/[[:blank:]]+xmlns(:[a-zA-Z0-9]+)?=("[^"]+"|'[^']+')/
 
   @doc """
   Parse XML in a structured list with key values
@@ -13,7 +24,7 @@ defmodule Xmlx.Parser do
   def parse(xml) do
     xml
       |> minify
-      |> (&(Regex.scan(~r/<[^!\?][^>]+>[^<>]+<\/[^>]+>|<\/[^>]+>|<[^!\?][^>]+>/, &1))).()
+      |> (&(Regex.scan(@re_tags, &1))).()
       |> Enum.map(
         fn(token) ->
           cond do
@@ -24,7 +35,7 @@ defmodule Xmlx.Parser do
             String.match?(Enum.at(token, 0), ~r/^<([^\/][^<>]+|[^<>]+)>$/) ->
               {:open, Enum.at(token, 0) }
             true ->
-              Regex.scan(~r/(?<open><[^>]+>)(?<value>[^<>]+)(?<close><\/[^>]+>)/, Enum.at(token, 0), [capture: [:open, :value, :close]])
+              Regex.scan(@re_tag_open_content_close, Enum.at(token, 0), [capture: [:open, :value, :close]])
                 |> Enum.map(&([{:open, Enum.at(&1, 0)}, {:value, Enum.at(&1, 1)}, {:close, Enum.at(&1, 2)}]))
           end
         end
@@ -37,30 +48,30 @@ defmodule Xmlx.Parser do
     [ns_alias, name] = ~r/<((?<alias>[a-zA-Z0-9_\-\.]+)(?<separator>:))?(?<name>[^\n[:blank:]>]+)/
       |> Regex.scan(value, [capture: [:alias, :name]])
       |> List.flatten
-    attrs = ~r/[[:blank:]]+(?<name>[^=]+)="(?<value_double>[^"]+)"|'(?<value_single>[^']+)'/
-      |> Regex.scan(String.replace(value, ~r/ xmlns(:[a-zA-Z0-9]+)?=("[^"]+"|'[^']+')/, ""), [capture: [:name, :value_double, :value_single]])
-      |> Enum.map(&(List.delete(&1, "") |> (fn(v) -> {String.to_atom(Enum.at(v, 0)), Enum.at(v, 1)} end).()))
     nss = [] ++ [get_namespaces(value)]
+    attrs = get_attributes(value, nss)
     namespace = resolve_namespace_from_alias(nss, String.to_atom(ns_alias))
-    build(t, [String.to_atom(name)], nss, build_node_structure(name, namespace, attrs))
+    name = if namespace != nil, do: "{" <> namespace <> "}" <> name, else: name
+    build(t, [String.to_atom(name)], nss, build_node_structure(name, attrs))
   end
 
   defp build([{:open, value}|t], path, ns_stack, result) do
     [ns_alias, name] = ~r/<((?<alias>[a-zA-Z0-9_\-\.]+)(?<separator>:))?(?<name>[^\n[:blank:]>]+)/
       |> Regex.scan(value, [capture: [:alias, :name]])
       |> List.flatten
-    attrs = ~r/[[:blank:]]+(?<name>[^=]+)="(?<value_double>[^"]+)"|'(?<value_single>[^']+)'/
-      |> Regex.scan(String.replace(value, ~r/ xmlns(:[a-zA-Z0-9]+)?=("[^"]+"|'[^']+')/, ""), [capture: [:name, :value_double, :value_single]])
-      |> Enum.map(&(List.delete(&1, "") |> (fn(v) -> {String.to_atom(Enum.at(v, 0)), Enum.at(v, 1)} end).()))
     nss = [get_namespaces(value)] ++ ns_stack
+    attrs = get_attributes(value, nss)
     namespace = resolve_namespace_from_alias(nss, String.to_atom(ns_alias))
+    name = if namespace != nil, do: "{" <> namespace <> "}" <> name, else: name
     build(t, path ++ [String.to_atom(name)], nss, put(result, path, name, attrs, namespace, :open))
   end
 
   defp build([{:close, value}|t], path, ns_stack, result) do
-    [_ns_alias, name] = ~r/<\/((?<alias>[a-zA-Z0-9_\-\.]+)(?<separator>:))?(?<name>[^\n[:blank:]>]+)>/
+    [ns_alias, name] = ~r/<\/((?<alias>[a-zA-Z0-9_\-\.]+)(?<separator>:))?(?<name>[^\n[:blank:]>]+)>/
       |> Regex.scan(value, [capture: [:alias, :name]])
       |> List.flatten
+    namespace = resolve_namespace_from_alias(ns_stack, String.to_atom(ns_alias))
+    name = if namespace != nil, do: "{" <> namespace <> "}" <> name, else: name
     nss = Enum.drop(ns_stack, 1)
     build(t, path -- [String.to_atom(name)], nss, result)
   end
@@ -69,16 +80,15 @@ defmodule Xmlx.Parser do
     [ns_alias, name] = ~r/<((?<alias>[a-zA-Z0-9_\-\.]+)(?<separator>:))?(?<name>[^\/\n[:blank:]]+)/
       |> Regex.scan(value, [capture: [:alias, :name]])
       |> List.flatten
-    attrs = ~r/[[:blank:]]+(?<name>[^=]+)="(?<value_double>[^"]+)"|'(?<value_single>[^']+)'/
-      |> Regex.scan(String.replace(value, ~r/ xmlns(:[a-zA-Z0-9]+)?=("[^"]+"|'[^']+')/, ""), [capture: [:name, :value_double, :value_single]])
-      |> Enum.map(&(List.delete(&1, "") |> (fn(v) -> {String.to_atom(Enum.at(v, 0)), Enum.at(v, 1)} end).()))
     nss = [get_namespaces(value)] ++ ns_stack
+    attrs = get_attributes(value, nss)
     namespace = resolve_namespace_from_alias(nss, String.to_atom(ns_alias))
+    name = if namespace != nil, do: "{" <> namespace <> "}" <> name, else: name
     build(t, path, ns_stack, put(result, path, name, attrs, namespace, :open_close))
   end
 
   defp build([{action, value}|t], path, ns_stack, result) do
-    build(t, path, ns_stack, put(result, path, String.to_atom(value), [], "", action))
+    build(t, path, ns_stack, put(result, path, value, [], "", action))
   end
 
   defp build([], _path, _ns_stack, result) do
@@ -86,11 +96,11 @@ defmodule Xmlx.Parser do
   end
 
   defp put(result, [], name, attrs, namespace, action, current_key, stack) do
-    node = result ++ if action == :value, do: [{:text, Atom.to_string(name)}], else: build_node_structure(name, namespace, attrs)
+    node = result ++ if action == :value, do: [{:text, name}], else: build_node_structure(name, attrs)
     if Enum.count(stack) == 1 do
       [{current_key, node}]
     else
-      Keyword.put(stack, current_key, node)
+      List.keyreplace(stack, current_key, 0, {current_key, node})
         |> Enum.reduce(fn (element, acc_element) ->
           key_acc = elem(acc_element, 0)
           value_acc = elem(acc_element, 1)
@@ -107,20 +117,13 @@ defmodule Xmlx.Parser do
     put(List.last(Keyword.get_values(result, List.first(path))), path -- [List.first(path)], name, attrs, namespace, action, List.first(path), node ++ stack)
   end
 
-  defp build_node_structure(node_name, nil, []) do
+  defp build_node_structure(node_name, []) do
     [{String.to_atom(node_name), []}]
   end
 
-  defp build_node_structure(node_name, namespace, []) do
-    [{String.to_atom(node_name), [{:__namespace__, namespace}]}]
-  end
-
-  defp build_node_structure(node_name, nil, attrs) do
-    [{String.to_atom(node_name), [{:__attrs__, attrs}]}]
-  end
-
-  defp build_node_structure(node_name, namespace, attrs) do
-    [{String.to_atom(node_name), [{:__namespace__, namespace}, {:__attrs__, attrs}]}]
+  defp build_node_structure(node_name, attrs) do
+    #[{String.to_atom(node_name), [{:__attrs__, attrs}]}]
+    [{String.to_atom(node_name), attrs}]
   end
 
   defp resolve_namespace_from_alias([], _ns_alias) do
@@ -130,6 +133,25 @@ defmodule Xmlx.Parser do
   defp resolve_namespace_from_alias([h|t], ns_alias) do
     namespace = Keyword.get(h, ns_alias)
     if namespace != nil, do: namespace, else: resolve_namespace_from_alias(t, ns_alias)
+  end
+
+  defp get_attributes(fragment, namespaces) do
+    @re_attributes
+      |> Regex.scan(String.replace(fragment, @re_namespace, ""), [capture: [:name, :value_double, :value_single]])
+      |> Enum.map(&(List.delete(&1, "") |> (fn(v) -> {String.to_atom(resolve_alias_attribute(Enum.at(v, 0), namespaces, :attr_name)), resolve_alias_attribute(Enum.at(v, 1), namespaces)} end).()))
+  end
+
+  defp resolve_alias_attribute(attr, namespaces) do
+    attr
+  end
+
+  defp resolve_alias_attribute(attr, namespaces, :attr_name) do
+    if String.contains?(attr, ":") do
+      namespace = resolve_namespace_from_alias(namespaces, String.to_atom(attr |> String.split(":") |> Enum.at(0)))
+      "{" <> namespace <> "}" <> "@" <> (attr |> String.split(":") |> Enum.at(1))
+    else
+      "@" <> attr
+    end
   end
 
 end
