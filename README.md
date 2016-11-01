@@ -63,37 +63,62 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 ### WSDL Example (simple.wsdl)
   ```xml
 <?xml version="1.0"?>
-<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.examples.com/wsdl/HelloService.wsdl" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="HelloService" targetNamespace="http://www.examples.com/wsdl/HelloService.wsdl">
-  <message name="SayHelloRequest">
-    <part name="firstName" type="xsd:string"/>
+<definitions name="EndorsementSearch"
+  targetNamespace="http://namespaces.snowboard-info.com"
+  xmlns:es="http://www.snowboard-info.com/EndorsementSearch.wsdl"
+  xmlns:esxsd="http://schemas.snowboard-info.com/EndorsementSearch.xsd"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns="http://schemas.xmlsoap.org/wsdl/"
+>
+
+  <!-- omitted types section with content model schema info -->
+
+  <message name="GetEndorsingBoarderRequest">
+    <part name="body" element="esxsd:GetEndorsingBoarder"/>
   </message>
-  <message name="SayHelloResponse">
-    <part name="greeting" type="xsd:string"/>
+
+  <message name="GetEndorsingBoarderResponse">
+    <part name="body" element="esxsd:GetEndorsingBoarderResponse"/>
   </message>
-  <portType name="Hello_PortType">
-    <operation name="sayHello">
-      <input message="tns:SayHelloRequest"/>
-      <output message="tns:SayHelloResponse"/>
+
+  <portType name="GetEndorsingBoarderPortType">
+    <operation name="GetEndorsingBoarder">
+      <input message="es:GetEndorsingBoarderRequest"/>
+      <output message="es:GetEndorsingBoarderResponse"/>
+      <fault message="es:GetEndorsingBoarderFault"/>
     </operation>
   </portType>
-  <binding name="Hello_Binding" type="tns:Hello_PortType">
-    <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
-    <operation name="sayHello">
-      <soap:operation soapAction="sayHello"/>
+
+  <binding name="EndorsementSearchSoapBinding"
+           type="es:GetEndorsingBoarderPortType">
+    <soap:binding style="document"
+                  transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="GetEndorsingBoarder">
+      <soap:operation
+        soapAction="http://www.snowboard-info.com/EndorsementSearch"/>
       <input>
-        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:examples:helloservice" use="encoded"/>
+        <soap:body use="literal"
+          namespace="http://schemas.snowboard-info.com/EndorsementSearch.xsd"/>
       </input>
       <output>
-        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:examples:helloservice" use="encoded"/>
+        <soap:body use="literal"
+          namespace="http://schemas.snowboard-info.com/EndorsementSearch.xsd"/>
       </output>
+      <fault>
+        <soap:body use="literal"
+          namespace="http://schemas.snowboard-info.com/EndorsementSearch.xsd"/>
+      </fault>
     </operation>
   </binding>
-  <service name="Hello_Service">
-    <documentation>WSDL File for HelloService</documentation>
-    <port binding="tns:Hello_Binding" name="Hello_Port">
-      <soap:address location="http://www.examples.com/SayHello/"/>
+
+  <service name="EndorsementSearchService">
+    <documentation>snowboarding-info.com Endorsement Service</documentation>
+    <port name="GetEndorsingBoarderPort"
+          binding="es:EndorsementSearchSoapBinding">
+      <soap:address location="http://www.snowboard-info.com/EndorsementSearch"/>
     </port>
   </service>
+
 </definitions>
   ```
 
