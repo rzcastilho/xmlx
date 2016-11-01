@@ -3,5 +3,5 @@
   <to>Tove</to>
   <from>Jani</from>
   <heading>Reminder</heading>
-  <body>Don't forget me this weekend!</body>
+  <body type="text">Don't forget me this weekend!</body>
 </note>

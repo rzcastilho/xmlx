@@ -14,7 +14,7 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 
     ```elixir
     def deps do
-      [{:xmlx, "~> 0.0.1"}]
+      [{:xmlx, "~> 0.1.0"}]
     end
     ```
 
@@ -35,7 +35,7 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
   <to>Tove</to>
   <from>Jani</from>
   <heading>Reminder</heading>
-  <body>Don't forget me this weekend!</body>
+  <body type="text">Don't forget me this weekend!</body>
 </note>
   ```
 
@@ -45,10 +45,10 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
     ```
     ```
 [note: [to: [text: "Tove"], from: [text: "Jani"], heading: [text: "Reminder"],
-  body: [text: "Don't forget me this weekend!"]]]
+  body: ["@type": "text", text: "Don't forget me this weekend!"]]]
     ```
 
-  2. Find element/attribute
+  2. Find by element name
     ```elixir
     File.read!("simple.xml") |> Xmlx.parse() |> Xmlx.find(:from)
     ```
@@ -56,8 +56,22 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
     ```elixir
     File.read!("simple.xml") |> Xmlx.parse() |> Xmlx.find("from")
     ```
+    result
     ```
 [from: [text: "Jani"]]
+    ```
+
+  3. Find by attribute name
+    ```elixir
+    File.read!("simple.xml") |> Xmlx.parse() |> Xmlx.find(:"@type")
+    ```
+    or
+    ```elixir
+    File.read!("simple.xml") |> Xmlx.parse() |> Xmlx.find("@type")
+    ```
+    result
+    ```
+["@type": "text"]
     ```
 
 ### WSDL Example (simple.wsdl)
@@ -171,6 +185,7 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
     ```elixir
     File.read!("simple.wsdl") |> Xmlx.parse() |> Xmlx.find("port")
     ```
+    result
     ```
 ["{http://schemas.xmlsoap.org/wsdl/}port": ["@name": "GetEndorsingBoarderPort",
   "@binding": "es:EndorsementSearchSoapBinding",
@@ -185,6 +200,7 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
     ```elixir
     File.read!("simple.wsdl") |> Xmlx.parse() |> Xmlx.find("@location")
     ```
+    result
     ```
 ["@location": "http://www.snowboard-info.com/EndorsementSearch"]
     ```
