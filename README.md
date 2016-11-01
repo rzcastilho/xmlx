@@ -1,6 +1,10 @@
 # Xmlx
 
-Xmlx is a XML parser that enables search using attribute or element names.
+[![Build status](https://travis-ci.org/rodrigozc/xmlx.svg?branch=master)](https://travis-ci.org/rodrigozc/xmlx)
+[![xmlx version](https://img.shields.io/hexpm/v/xmlx.svg)](https://hex.pm/packages/xmlx)
+[![Hex.pm](https://img.shields.io/hexpm/dt/xmlx.svg)](https://hex.pm/packages/xmlx)
+
+Elixir native XML parser that enables search using attribute or element names
 
 ## Installation
 
@@ -48,6 +52,10 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
     ```elixir
     File.read!("simple.xml") |> Xmlx.parse() |> Xmlx.find(:from)
     ```
+    or
+    ```elixir
+    File.read!("simple.xml") |> Xmlx.parse() |> Xmlx.find("from")
+    ```
     ```
 [from: [text: "Jani"]]
     ```
@@ -94,59 +102,64 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
     File.read!("simple.wsdl") |> Xmlx.parse()
     ```
     ```
-[definitions: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
-  __attrs__: [name: "HelloService",
-   targetNamespace: "http://www.examples.com/wsdl/HelloService.wsdl"],
-  message: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
-   __attrs__: [name: "SayHelloRequest"],
-   part: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
-    __attrs__: [name: "firstName", type: "xsd:string"]]],
-  message: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
-   __attrs__: [name: "SayHelloResponse"],
-   part: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
-    __attrs__: [name: "greeting", type: "xsd:string"]]],
-  portType: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
-   __attrs__: [name: "Hello_PortType"],
-   operation: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
-    __attrs__: [name: "sayHello"],
-    input: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
-     __attrs__: [message: "tns:SayHelloRequest"]],
-    output: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
-     __attrs__: [message: "tns:SayHelloResponse"]]]],
-  binding: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
-   __attrs__: [name: "Hello_Binding", type: "tns:Hello_PortType"],
-   binding: [__namespace__: "http://schemas.xmlsoap.org/wsdl/soap/",
-    __attrs__: [style: "rpc",
-     transport: "http://schemas.xmlsoap.org/soap/http"]],
-   operation: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
-    __attrs__: [name: "sayHello"],
-    operation: [__namespace__: "http://schemas.xmlsoap.org/wsdl/soap/",
-     __attrs__: [soapAction: "sayHello"]],
-    input: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
-     body: [__namespace__: "http://schemas.xmlsoap.org/wsdl/soap/",
-      __attrs__: [encodingStyle: "http://schemas.xmlsoap.org/soap/encoding/",
-       namespace: "urn:examples:helloservice", use: "encoded"]]],
-    output: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
-     body: [__namespace__: "http://schemas.xmlsoap.org/wsdl/soap/",
-      __attrs__: [encodingStyle: "http://schemas.xmlsoap.org/soap/encoding/",
-       namespace: "urn:examples:helloservice", use: "encoded"]]]]],
-  service: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
-   __attrs__: [name: "Hello_Service"],
-   documentation: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
-    text: "WSDL File for HelloService"],
-   port: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
-    __attrs__: [binding: "tns:Hello_Binding", name: "Hello_Port"],
-    address: [__namespace__: "http://schemas.xmlsoap.org/wsdl/soap/",
-     __attrs__: [location: "http://www.examples.com/SayHello/"]]]]]]
+["{http://schemas.xmlsoap.org/wsdl/}definitions": ["@name": "EndorsementSearch",
+  "@targetNamespace": "http://namespaces.snowboard-info.com",
+  "{http://schemas.xmlsoap.org/wsdl/}message": ["@name": "GetEndorsingBoarderRequest",
+   "{http://schemas.xmlsoap.org/wsdl/}part": ["@name": "body",
+    "@element": "esxsd:GetEndorsingBoarder"]],
+  "{http://schemas.xmlsoap.org/wsdl/}message": ["@name": "GetEndorsingBoarderResponse",
+   "{http://schemas.xmlsoap.org/wsdl/}part": ["@name": "body",
+    "@element": "esxsd:GetEndorsingBoarderResponse"]],
+  "{http://schemas.xmlsoap.org/wsdl/}portType": ["@name": "GetEndorsingBoarderPortType",
+   "{http://schemas.xmlsoap.org/wsdl/}operation": ["@name": "GetEndorsingBoarder",
+    "{http://schemas.xmlsoap.org/wsdl/}input": ["@message": "es:GetEndorsingBoarderRequest"],
+    "{http://schemas.xmlsoap.org/wsdl/}output": ["@message": "es:GetEndorsingBoarderResponse"],
+    "{http://schemas.xmlsoap.org/wsdl/}fault": ["@message": "es:GetEndorsingBoarderFault"]]],
+  "{http://schemas.xmlsoap.org/wsdl/}binding": ["@name": "EndorsementSearchSoapBinding",
+   "@type": "es:GetEndorsingBoarderPortType",
+   "{http://schemas.xmlsoap.org/wsdl/soap/}binding": ["@style": "document",
+    "@transport": "http://schemas.xmlsoap.org/soap/http"],
+   "{http://schemas.xmlsoap.org/wsdl/}operation": ["@name": "GetEndorsingBoarder",
+    "{http://schemas.xmlsoap.org/wsdl/soap/}operation": ["@soapAction": "http://www.snowboard-info.com/EndorsementSearch"],
+    "{http://schemas.xmlsoap.org/wsdl/}input": ["{http://schemas.xmlsoap.org/wsdl/soap/}body": ["@use": "literal",
+      "@namespace": "http://schemas.snowboard-info.com/EndorsementSearch.xsd"]],
+    "{http://schemas.xmlsoap.org/wsdl/}output": ["{http://schemas.xmlsoap.org/wsdl/soap/}body": ["@use": "literal",
+      "@namespace": "http://schemas.snowboard-info.com/EndorsementSearch.xsd"]],
+    "{http://schemas.xmlsoap.org/wsdl/}fault": ["{http://schemas.xmlsoap.org/wsdl/soap/}body": ["@use": "literal",
+      "@namespace": "http://schemas.snowboard-info.com/EndorsementSearch.xsd"]]]],
+  "{http://schemas.xmlsoap.org/wsdl/}service": ["@name": "EndorsementSearchService",
+   "{http://schemas.xmlsoap.org/wsdl/}documentation": [text: "snowboarding-info.com Endorsement Service"],
+   "{http://schemas.xmlsoap.org/wsdl/}port": ["@name": "GetEndorsingBoarderPort",
+    "@binding": "es:EndorsementSearchSoapBinding",
+    "{http://schemas.xmlsoap.org/wsdl/soap/}address": ["@location": "http://www.snowboard-info.com/EndorsementSearch"]]]]]
     ```
 
-  2. Find element/attribute
+  2. Find by element name
     ```elixir
-    File.read!("simple.wsdl") |> Xmlx.parse() |> Xmlx.find(:port)
+    File.read!("simple.wsdl") |> Xmlx.parse() |> Xmlx.find(:"{http://schemas.xmlsoap.org/wsdl/}port")
+    ```
+    or
+    ```elixir
+    File.read!("simple.wsdl") |> Xmlx.parse() |> Xmlx.find("{http://schemas.xmlsoap.org/wsdl/}port")
+    ```
+    or
+    ```elixir
+    File.read!("simple.wsdl") |> Xmlx.parse() |> Xmlx.find("port")
     ```
     ```
-[port: [__namespace__: "http://schemas.xmlsoap.org/wsdl/",
-  __attrs__: [binding: "tns:Hello_Binding", name: "Hello_Port"],
-  address: [__namespace__: "http://schemas.xmlsoap.org/wsdl/soap/",
-   __attrs__: [location: "http://www.examples.com/SayHello/"]]]]
+["{http://schemas.xmlsoap.org/wsdl/}port": ["@name": "GetEndorsingBoarderPort",
+  "@binding": "es:EndorsementSearchSoapBinding",
+  "{http://schemas.xmlsoap.org/wsdl/soap/}address": ["@location": "http://www.snowboard-info.com/EndorsementSearch"]]]
+    ```
+
+  3. Find by attribute name
+    ```elixir
+    File.read!("simple.wsdl") |> Xmlx.parse() |> Xmlx.find(:"@location")
+    ```
+    or
+    ```elixir
+    File.read!("simple.wsdl") |> Xmlx.parse() |> Xmlx.find("@location")
+    ```
+    ```
+["@location": "http://www.snowboard-info.com/EndorsementSearch"]
     ```

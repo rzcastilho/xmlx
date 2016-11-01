@@ -1,7 +1,7 @@
 defmodule Xmlx.Common do
 
   @moduledoc """
-  Reusable operations through Xmlx application.
+  Reusable funtions through Xmlx library.
   """
 
   @doc """
@@ -19,7 +19,7 @@ defmodule Xmlx.Common do
   """
   @spec get_namespaces(String) :: List
   def get_namespaces(xml) do
-    ~r/ xmlns(:(?<alias>[a-zA-Z0-9]+))?=("(?<namespace_double>[^"]+)"|'(?<namespace_single>[^']+)')/
+    ~r/[[:blank:]]+xmlns(:(?<alias>[a-zA-Z0-9]+))?=("(?<namespace_double>[^"]+)"|'(?<namespace_single>[^']+)')/
       |> Regex.scan(xml, [capture: [:alias, :namespace_double, :namespace_single]])
       |> Enum.map(&({String.to_atom(Enum.at(&1, 0)), (if Enum.at(&1, 1) != "", do: Enum.at(&1, 1), else: Enum.at(&1, 2))}))
       |> Enum.uniq

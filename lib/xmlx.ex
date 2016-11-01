@@ -5,7 +5,7 @@ defmodule Xmlx do
   alias Xmlx.Finder
 
   @moduledoc """
-  XML Utility Functions
+  Xmlx simple XML parser library
   """
 
   @doc """
@@ -17,7 +17,7 @@ defmodule Xmlx do
   end
 
   @doc """
-  Parse XML in a structured list with key values.
+  Parse XML in a structured key/values list.
   """
   @spec parse(String) :: List
   def parse(xml) do
@@ -33,7 +33,7 @@ defmodule Xmlx do
   end
 
   @doc """
-  Return a filtered itens list based on attribute or element name.
+  Simple search to return a filtered list itens based on attribute or element name.
   """
   @spec find(List, Atom) :: List
   def find(document, filter) do
