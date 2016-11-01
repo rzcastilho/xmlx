@@ -27,11 +27,11 @@ defmodule XmlxTest do
   end
 
   test "Find by Attribute" do
-    assert File.read!("test/simple.wsdl") |> Xmlx.parse |> Xmlx.find(:location) == [location: "http://www.snowboard-info.com/EndorsementSearch"]
+    assert File.read!("test/simple.wsdl") |> Xmlx.parse |> Xmlx.find(:"@location") == ["@location": "http://www.snowboard-info.com/EndorsementSearch"]
   end
 
   test "Find by Attribute and Get Value" do
-    assert File.read!("test/simple.wsdl") |> Xmlx.parse |> Xmlx.find(:location) |> Keyword.get(:location) == "http://www.snowboard-info.com/EndorsementSearch"
+    assert File.read!("test/simple.wsdl") |> Xmlx.parse |> Xmlx.find(:"@location") |> Keyword.get(:"@location") == "http://www.snowboard-info.com/EndorsementSearch"
   end
 
 end
