@@ -1,7 +1,8 @@
 # Xmlx
 
+[![ci workflow](https://github.com/rzcastilho/xmlx/actions/workflows/ci.yml/badge.svg)](https://github.com/rzcastilho/xmlx/actions/workflows/ci.yml/badge.svg)
 [![xmlx version](https://img.shields.io/hexpm/v/xmlx.svg)](https://hex.pm/packages/xmlx)
-[![Hex.pm](https://img.shields.io/hexpm/dt/xmlx.svg)](https://hex.pm/packages/xmlx)
+[![hex.pm](https://img.shields.io/hexpm/dt/xmlx.svg)](https://hex.pm/packages/xmlx)
 
 Elixir native XML parser that enables search using attribute or element names
 
@@ -11,7 +12,7 @@ The package can be installed by adding `xmlx` to your list of dependencies in `m
 
 ```elixir
 def deps do
-  [{:xmlx, "~> 0.1.0"}]
+  [{:xmlx, "~> 0.1.1"}]
 end
 ```
 
