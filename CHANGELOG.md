@@ -14,6 +14,7 @@
 ### Changed
 
 - Add GitHub Actions and remove Travis CI
+- Add step to publish lib to hex.pm
 
 ## [0.1.0]
 
