@@ -26,7 +26,7 @@ jobs:
             elixir: 1.11.4
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
+      MIX_ENV: test
     steps:
       - uses: actions/checkout@v2
       - uses: erlef/setup-beam@v1
@@ -35,7 +35,13 @@ jobs:
           elixir-version: ${{matrix.elixir}}
       - run: mix deps.get
       - run: mix coveralls.github
-        env:
-          MIX_ENV: test
-      - if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-        run: mix hex.publish --yes --replace
+  publish:
+    needs: build
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    name: Publishing on HEX.PM
+    environment: production
+    steps:
+      - run: mix hex.publish --yes --replace
+    
+  
