@@ -3,6 +3,7 @@ on:
     tags:
       - '*'
     branches:
+      - master
       - feature/*
   pull_request:
     branches:
