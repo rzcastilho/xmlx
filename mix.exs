@@ -2,7 +2,7 @@ defmodule Xmlx.Mixfile do
   use Mix.Project
 
   @description "Elixir native XML parser that enables search using attribute or element names"
-  @version "0.2.0"
+  @version "0.1.1"
 
   def project() do
     [
@@ -41,8 +41,9 @@ defmodule Xmlx.Mixfile do
       licenses: ["WTFPL"],
       files: ~w(lib mix.exs README.md LICENSE),
       links: %{
-        "GitHub" => "https://github.com/rodrigozc/xmlx",
-        "Docs"   => "http://hexdocs.pm/xmlx"
+        "GitHub"    => "https://github.com/rodrigozc/xmlx",
+        "Docs"      => "http://hexdocs.pm/xmlx",
+        "Coveralls" => "https://coveralls.io/github/rzcastilho/xmlx"
       }
     ]
   end
