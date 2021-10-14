@@ -20,7 +20,7 @@ defmodule Xmlx.Parser do
   @doc """
   Parse XML in a structured list with key values
   """
-  @spec parse(String) :: List
+  @spec parse(String.t()) :: List.t()
   def parse(xml) do
     xml
       |> minify
@@ -95,7 +95,9 @@ defmodule Xmlx.Parser do
     result
   end
 
-  defp put(result, [], name, attrs, namespace, action, current_key, stack) do
+  defp put(result, path, name, attrs, namespace, action, current_key \\ "", stack \\ [])
+  
+  defp put(result, [], name, attrs, _namespace, action, current_key, stack) do
     node = result ++ if action == :value, do: [{:text, name}], else: build_node_structure(name, attrs)
     if Enum.count(stack) == 1 do
       [{current_key, node}]
@@ -112,7 +114,7 @@ defmodule Xmlx.Parser do
     end
   end
 
-  defp put(result, path, name, attrs, namespace, action \\ "", _current_key \\ "", stack \\ []) do
+  defp put(result, path, name, attrs, namespace, action, _current_key, stack) do
     node = [{List.first(path), Keyword.get(result, List.first(path))}]
     put(List.last(Keyword.get_values(result, List.first(path))), path -- [List.first(path)], name, attrs, namespace, action, List.first(path), node ++ stack)
   end
@@ -141,7 +143,7 @@ defmodule Xmlx.Parser do
       |> Enum.map(&(List.delete(&1, "") |> (fn(v) -> {String.to_atom(resolve_alias_attribute(Enum.at(v, 0), namespaces, :attr_name)), resolve_alias_attribute(Enum.at(v, 1), namespaces)} end).()))
   end
 
-  defp resolve_alias_attribute(attr, namespaces) do
+  defp resolve_alias_attribute(attr, _namespaces) do
     attr
   end
 
