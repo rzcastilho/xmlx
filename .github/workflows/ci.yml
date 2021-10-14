@@ -42,6 +42,11 @@ jobs:
     name: Publishing on HEX.PM
     environment: production
     steps:
+      - uses: actions/checkout@v2
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: 24.1
+          elixir-version: 1.12.3
       - run: mix hex.publish --yes --replace
     
   
