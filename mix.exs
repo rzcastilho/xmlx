@@ -5,14 +5,23 @@ defmodule Xmlx.Mixfile do
   @version "0.2.0"
 
   def project() do
-    [app: :xmlx,
-     name: "Xmlx",
-     version: @version,
-     description: @description,
-     elixir: "~> 1.9",
-     package: package(),
-     deps: deps(),
-     source_url: "https://github.com/rodrigozc/xmlx"]
+    [
+      app: :xmlx,
+      name: "Xmlx",
+      version: @version,
+      description: @description,
+      elixir: "~> 1.9",
+      package: package(),
+      deps: deps(),
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test
+      ],
+      source_url: "https://github.com/rodrigozc/xmlx"
+    ]
   end
 
   def application() do
@@ -21,6 +30,7 @@ defmodule Xmlx.Mixfile do
 
   defp deps() do
     [
+      {:excoveralls, "~> 0.14", only: :test},
       {:ex_doc, "~> 0.25", only: :dev, runtime: false}
     ]
   end

@@ -24,6 +24,8 @@ jobs:
             elixir: 1.10.4
           - otp: 24.1
             elixir: 1.11.4
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v2
       - uses: erlef/setup-beam@v1
@@ -31,7 +33,7 @@ jobs:
           otp-version: ${{matrix.otp}}
           elixir-version: ${{matrix.elixir}}
       - run: mix deps.get
-      - run: mix test
+      - run: mix coveralls.github
   publish:
     runs-on: ubuntu-latest
     environment: production
