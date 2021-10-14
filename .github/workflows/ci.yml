@@ -1,0 +1,40 @@
+on:
+  push:
+    tags:
+      - '*'
+    branches:
+      - feature/*
+  pull_request:
+    branches:
+      - master
+      - develop
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}}
+    strategy:
+      matrix:
+        otp: ['20.3', '21.3', '22.3', '23.3', '24.1']
+        elixir: ['1.8.2', '1.9.4', '1.10.4', '1.11.4',  '1.12.3']
+    steps:
+      - uses: actions/checkout@v2
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{matrix.otp}}
+          elixir-version: ${{matrix.elixir}}
+      - run: mix deps.get
+      - run: mix test
+  publish:
+    runs-on: ubuntu-latest
+    environment: production
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    needs: test
+    steps:
+      - name: Check out
+        uses: actions/checkout@v2
+
+      - name: Publish to Hex.pm
+        uses: erlangpack/github-action@v1
+        env:
+          HEX_API_KEY: ${{ secrets.HEX_API_KEY }}

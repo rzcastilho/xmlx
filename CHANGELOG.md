@@ -5,7 +5,11 @@
 ### Fixed
 
 - Fix build warnings [issue #10] @rzcastilho
-- Fix spec type rederences
+- Fix spec type references
+
+### Changed
+
+- Add GitHub Actions and remove Travis CI
 
 ## [0.1.0]
 

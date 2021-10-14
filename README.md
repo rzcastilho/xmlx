@@ -7,23 +7,13 @@ Elixir native XML parser that enables search using attribute or element names
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
+The package can be installed by adding `xmlx` to your list of dependencies in `mix.exs`:
 
-1. Add `xmlx` to your list of dependencies in `mix.exs`:
-
-    ```elixir
-    def deps do
-      [{:xmlx, "~> 0.2.0"}]
-    end
-    ```
-
-2. Ensure `xmlx` is started before your application:
-
-    ```elixir
-    def application do
-      [applications: [:xmlx]]
-    end
-    ```
+```elixir
+def deps do
+  [{:xmlx, "~> 0.1.0"}]
+end
+```
 
 ## Usage
 
