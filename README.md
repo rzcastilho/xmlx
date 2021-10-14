@@ -2,8 +2,9 @@
 
 [![ci workflow](https://github.com/rzcastilho/xmlx/actions/workflows/ci.yml/badge.svg)](https://github.com/rzcastilho/xmlx/actions/workflows/ci.yml/badge.svg)
 [![coverage status](https://coveralls.io/repos/github/rzcastilho/xmlx/badge.svg)](https://coveralls.io/github/rzcastilho/xmlx)
-[![xmlx version](https://img.shields.io/hexpm/v/xmlx.svg)](https://hex.pm/packages/xmlx)
-[![hex.pm](https://img.shields.io/hexpm/dt/xmlx.svg)](https://hex.pm/packages/xmlx)
+[![hex.pm version](https://img.shields.io/hexpm/v/xmlx.svg)](https://hex.pm/packages/xmlx)
+[![hex.pm downloads](https://img.shields.io/hexpm/dt/xmlx.svg)](https://hex.pm/packages/xmlx)
+[![hex.pm license](https://img.shields.io/hexpm/l/xmlx.svg)](https://github.com/rzcastilho/xmlx/blob/master/LICENSE)
 
 Elixir native XML parser that enables search using attribute or element names
 
