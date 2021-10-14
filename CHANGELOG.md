@@ -2,6 +2,10 @@
 
 ## [0.1.1]
 
+### Added
+
+- Add ExCoveralls
+
 ### Fixed
 
 - Fix build warnings [issue #10] @rzcastilho
