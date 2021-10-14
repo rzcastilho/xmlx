@@ -1,6 +1,5 @@
 # Xmlx
 
-[![Build status](https://travis-ci.org/rodrigozc/xmlx.svg?branch=master)](https://travis-ci.org/rodrigozc/xmlx)
 [![xmlx version](https://img.shields.io/hexpm/v/xmlx.svg)](https://hex.pm/packages/xmlx)
 [![Hex.pm](https://img.shields.io/hexpm/dt/xmlx.svg)](https://hex.pm/packages/xmlx)
 
@@ -10,15 +9,15 @@ Elixir native XML parser that enables search using attribute or element names
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
 
-  1. Add `xmlx` to your list of dependencies in `mix.exs`:
+1. Add `xmlx` to your list of dependencies in `mix.exs`:
 
     ```elixir
     def deps do
-      [{:xmlx, "~> 0.1.0"}]
+      [{:xmlx, "~> 0.2.0"}]
     end
     ```
 
-  2. Ensure `xmlx` is started before your application:
+2. Ensure `xmlx` is started before your application:
 
     ```elixir
     def application do
@@ -29,7 +28,8 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 ## Usage
 
 ### XML Example (simple.xml)
-  ```xml
+
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <note>
   <to>Tove</to>
@@ -37,45 +37,73 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
   <heading>Reminder</heading>
   <body type="text">Don't forget me this weekend!</body>
 </note>
-  ```
+```
 
-  1. Document parse
+1. Document parse
+
     ```elixir
-    File.read!("simple.xml") |> Xmlx.parse()
-    ```
-    ```
-[note: [to: [text: "Tove"], from: [text: "Jani"], heading: [text: "Reminder"],
-  body: ["@type": "text", text: "Don't forget me this weekend!"]]]
+    File.read!("simple.xml")
+    |> Xmlx.parse()
     ```
 
-  2. Find by element name
     ```elixir
-    File.read!("simple.xml") |> Xmlx.parse() |> Xmlx.find(:from)
+    [
+      note: [
+        to: [text: "Tove"],
+        from: [text: "Jani"],
+        heading: [text: "Reminder"],
+        body: ["@type": "text", text: "Don't forget me this weekend!"]
+      ]
+    ]
     ```
+
+2. Find by element name
+
+    ```elixir
+    File.read!("simple.xml")
+    |> Xmlx.parse()
+    |> Xmlx.find(:from)
+    ```
+
     or
+
     ```elixir
-    File.read!("simple.xml") |> Xmlx.parse() |> Xmlx.find("from")
-    ```
-    result
-    ```
-[from: [text: "Jani"]]
+    File.read!("simple.xml")
+    |> Xmlx.parse()
+    |> Xmlx.find("from")
     ```
 
-  3. Find by attribute name
-    ```elixir
-    File.read!("simple.xml") |> Xmlx.parse() |> Xmlx.find(:"@type")
-    ```
-    or
-    ```elixir
-    File.read!("simple.xml") |> Xmlx.parse() |> Xmlx.find("@type")
-    ```
     result
+
+    ```elixir
+    [from: [text: "Jani"]]
     ```
-["@type": "text"]
+
+3. Find by attribute name
+
+    ```elixir
+    File.read!("simple.xml")
+    |> Xmlx.parse()
+    |> Xmlx.find(:"@type")
+    ```
+
+    or
+
+    ```elixir
+    File.read!("simple.xml")
+    |> Xmlx.parse()
+    |> Xmlx.find("@type")
+    ```
+
+    result
+
+    ```elixir
+    ["@type": "text"]
     ```
 
 ### WSDL Example (simple.wsdl)
-  ```xml
+
+```xml
 <?xml version="1.0"?>
 <definitions name="EndorsementSearch"
   targetNamespace="http://namespaces.snowboard-info.com"
@@ -134,73 +162,154 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
   </service>
 
 </definitions>
-  ```
+```
 
-  1. Document parse
+1. Document parse
+
     ```elixir
-    File.read!("simple.wsdl") |> Xmlx.parse()
-    ```
-    ```
-["{http://schemas.xmlsoap.org/wsdl/}definitions": ["@name": "EndorsementSearch",
-  "@targetNamespace": "http://namespaces.snowboard-info.com",
-  "{http://schemas.xmlsoap.org/wsdl/}message": ["@name": "GetEndorsingBoarderRequest",
-   "{http://schemas.xmlsoap.org/wsdl/}part": ["@name": "body",
-    "@element": "esxsd:GetEndorsingBoarder"]],
-  "{http://schemas.xmlsoap.org/wsdl/}message": ["@name": "GetEndorsingBoarderResponse",
-   "{http://schemas.xmlsoap.org/wsdl/}part": ["@name": "body",
-    "@element": "esxsd:GetEndorsingBoarderResponse"]],
-  "{http://schemas.xmlsoap.org/wsdl/}portType": ["@name": "GetEndorsingBoarderPortType",
-   "{http://schemas.xmlsoap.org/wsdl/}operation": ["@name": "GetEndorsingBoarder",
-    "{http://schemas.xmlsoap.org/wsdl/}input": ["@message": "es:GetEndorsingBoarderRequest"],
-    "{http://schemas.xmlsoap.org/wsdl/}output": ["@message": "es:GetEndorsingBoarderResponse"],
-    "{http://schemas.xmlsoap.org/wsdl/}fault": ["@message": "es:GetEndorsingBoarderFault"]]],
-  "{http://schemas.xmlsoap.org/wsdl/}binding": ["@name": "EndorsementSearchSoapBinding",
-   "@type": "es:GetEndorsingBoarderPortType",
-   "{http://schemas.xmlsoap.org/wsdl/soap/}binding": ["@style": "document",
-    "@transport": "http://schemas.xmlsoap.org/soap/http"],
-   "{http://schemas.xmlsoap.org/wsdl/}operation": ["@name": "GetEndorsingBoarder",
-    "{http://schemas.xmlsoap.org/wsdl/soap/}operation": ["@soapAction": "http://www.snowboard-info.com/EndorsementSearch"],
-    "{http://schemas.xmlsoap.org/wsdl/}input": ["{http://schemas.xmlsoap.org/wsdl/soap/}body": ["@use": "literal",
-      "@namespace": "http://schemas.snowboard-info.com/EndorsementSearch.xsd"]],
-    "{http://schemas.xmlsoap.org/wsdl/}output": ["{http://schemas.xmlsoap.org/wsdl/soap/}body": ["@use": "literal",
-      "@namespace": "http://schemas.snowboard-info.com/EndorsementSearch.xsd"]],
-    "{http://schemas.xmlsoap.org/wsdl/}fault": ["{http://schemas.xmlsoap.org/wsdl/soap/}body": ["@use": "literal",
-      "@namespace": "http://schemas.snowboard-info.com/EndorsementSearch.xsd"]]]],
-  "{http://schemas.xmlsoap.org/wsdl/}service": ["@name": "EndorsementSearchService",
-   "{http://schemas.xmlsoap.org/wsdl/}documentation": [text: "snowboarding-info.com Endorsement Service"],
-   "{http://schemas.xmlsoap.org/wsdl/}port": ["@name": "GetEndorsingBoarderPort",
-    "@binding": "es:EndorsementSearchSoapBinding",
-    "{http://schemas.xmlsoap.org/wsdl/soap/}address": ["@location": "http://www.snowboard-info.com/EndorsementSearch"]]]]]
+    File.read!("simple.wsdl")
+    |> Xmlx.parse()
     ```
 
-  2. Find by element name
     ```elixir
-    File.read!("simple.wsdl") |> Xmlx.parse() |> Xmlx.find(:"{http://schemas.xmlsoap.org/wsdl/}port")
+    [
+      "{http://schemas.xmlsoap.org/wsdl/}definitions": [
+        "@name": "EndorsementSearch",
+        "@targetNamespace": "http://namespaces.snowboard-info.com",
+        "{http://schemas.xmlsoap.org/wsdl/}message": [
+          "@name": "GetEndorsingBoarderRequest",
+          "{http://schemas.xmlsoap.org/wsdl/}part": [
+            "@name": "body",
+            "@element": "esxsd:GetEndorsingBoarder"
+          ]
+        ],
+        "{http://schemas.xmlsoap.org/wsdl/}message": [
+          "@name": "GetEndorsingBoarderResponse",
+          "{http://schemas.xmlsoap.org/wsdl/}part": [
+            "@name": "body",
+            "@element": "esxsd:GetEndorsingBoarderResponse"
+          ]
+        ],
+        "{http://schemas.xmlsoap.org/wsdl/}portType": [
+          "@name": "GetEndorsingBoarderPortType",
+          "{http://schemas.xmlsoap.org/wsdl/}operation": [
+            "@name": "GetEndorsingBoarder",
+            "{http://schemas.xmlsoap.org/wsdl/}input": [
+              "@message": "es:GetEndorsingBoarderRequest"
+            ],
+            "{http://schemas.xmlsoap.org/wsdl/}output": [
+              "@message": "es:GetEndorsingBoarderResponse"
+            ],
+            "{http://schemas.xmlsoap.org/wsdl/}fault": [
+              "@message": "es:GetEndorsingBoarderFault"
+            ]
+          ]
+        ],
+        "{http://schemas.xmlsoap.org/wsdl/}binding": [
+          "@name": "EndorsementSearchSoapBinding",
+          "@type": "es:GetEndorsingBoarderPortType",
+          "{http://schemas.xmlsoap.org/wsdl/soap/}binding": [
+            "@style": "document",
+            "@transport": "http://schemas.xmlsoap.org/soap/http"
+          ],
+          "{http://schemas.xmlsoap.org/wsdl/}operation": [
+            "@name": "GetEndorsingBoarder",
+            "{http://schemas.xmlsoap.org/wsdl/soap/}operation": [
+              "@soapAction": "http://www.snowboard-info.com/EndorsementSearch"
+            ],
+            "{http://schemas.xmlsoap.org/wsdl/}input": [
+              "{http://schemas.xmlsoap.org/wsdl/soap/}body": [
+                "@use": "literal",
+                "@namespace": "http://schemas.snowboard-info.com/EndorsementSearch.xsd"
+              ]
+            ],
+            "{http://schemas.xmlsoap.org/wsdl/}output": [
+              "{http://schemas.xmlsoap.org/wsdl/soap/}body": [
+                "@use": "literal",
+                "@namespace": "http://schemas.snowboard-info.com/EndorsementSearch.xsd"
+              ]
+            ],
+            "{http://schemas.xmlsoap.org/wsdl/}fault": [
+              "{http://schemas.xmlsoap.org/wsdl/soap/}body": [
+                "@use": "literal",
+                "@namespace": "http://schemas.snowboard-info.com/EndorsementSearch.xsd"
+              ]
+            ]
+          ]
+        ],
+        "{http://schemas.xmlsoap.org/wsdl/}service": [
+          "@name": "EndorsementSearchService",
+          "{http://schemas.xmlsoap.org/wsdl/}documentation": [
+            text: "snowboarding-info.com Endorsement Service"
+          ],
+          "{http://schemas.xmlsoap.org/wsdl/}port": [
+            "@name": "GetEndorsingBoarderPort",
+            "@binding": "es:EndorsementSearchSoapBinding",
+            "{http://schemas.xmlsoap.org/wsdl/soap/}address": [
+              "@location": "http://www.snowboard-info.com/EndorsementSearch"
+            ]
+          ]
+        ]
+      ]
+    ]
     ```
+
+2. Find by element name
+
+    ```elixir
+    File.read!("simple.wsdl")
+    |> Xmlx.parse()
+    |> Xmlx.find(:"{http://schemas.xmlsoap.org/wsdl/}port")
+    ```
+
     or
+
     ```elixir
-    File.read!("simple.wsdl") |> Xmlx.parse() |> Xmlx.find("{http://schemas.xmlsoap.org/wsdl/}port")
+    File.read!("simple.wsdl")
+    |> Xmlx.parse()
+    |> Xmlx.find("{http://schemas.xmlsoap.org/wsdl/}port")
     ```
+
     or
+
     ```elixir
-    File.read!("simple.wsdl") |> Xmlx.parse() |> Xmlx.find("port")
+    File.read!("simple.wsdl")
+    |> Xmlx.parse()
+    |> Xmlx.find("port")
     ```
+
     result
-    ```
-["{http://schemas.xmlsoap.org/wsdl/}port": ["@name": "GetEndorsingBoarderPort",
-  "@binding": "es:EndorsementSearchSoapBinding",
-  "{http://schemas.xmlsoap.org/wsdl/soap/}address": ["@location": "http://www.snowboard-info.com/EndorsementSearch"]]]
+
+    ```elixir
+    [
+      "{http://schemas.xmlsoap.org/wsdl/}port": [
+        "@name": "GetEndorsingBoarderPort",
+        "@binding": "es:EndorsementSearchSoapBinding",
+        "{http://schemas.xmlsoap.org/wsdl/soap/}address": [
+          "@location": "http://www.snowboard-info.com/EndorsementSearch"
+        ]
+      ]
+    ]
     ```
 
-  3. Find by attribute name
+3. Find by attribute name
+
     ```elixir
-    File.read!("simple.wsdl") |> Xmlx.parse() |> Xmlx.find(:"@location")
+    File.read!("simple.wsdl")
+    |> Xmlx.parse()
+    |> Xmlx.find(:"@location")
     ```
+
     or
+
     ```elixir
-    File.read!("simple.wsdl") |> Xmlx.parse() |> Xmlx.find("@location")
+    File.read!("simple.wsdl")
+    |> Xmlx.parse()
+    |> Xmlx.find("@location")
     ```
+
     result
-    ```
-["@location": "http://www.snowboard-info.com/EndorsementSearch"]
+
+    ```elixir
+    ["@location": "http://www.snowboard-info.com/EndorsementSearch"]
     ```

@@ -7,17 +7,17 @@ defmodule Xmlx.Common do
   @doc """
   Minify XML putting all elements inline whithout spaces and break lines.
   """
-  @spec minify(String) :: String
+  @spec minify(String.t()) :: String.t()
   def minify(xml) do
     xml
-      |> String.strip
+      |> String.trim()
       |> String.replace(~r/>[[:blank:]\n]+</, "><")
   end
 
   @doc """
   Return a list with all namespace declarations from passed string.
   """
-  @spec get_namespaces(String) :: List
+  @spec get_namespaces(String.t()) :: List.t()
   def get_namespaces(xml) do
     ~r/[[:blank:]]+xmlns(:(?<alias>[a-zA-Z0-9]+))?=("(?<namespace_double>[^"]+)"|'(?<namespace_single>[^']+)')/
       |> Regex.scan(xml, [capture: [:alias, :namespace_double, :namespace_single]])

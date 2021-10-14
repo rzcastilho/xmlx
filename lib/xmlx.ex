@@ -1,9 +1,7 @@
 defmodule Xmlx do
 
-  alias Xmlx.Common
-  alias Xmlx.Parser
-  alias Xmlx.Finder
-
+  alias Xmlx.{Common, Finder, Parser}
+  
   @moduledoc """
   Xmlx simple XML parser library
   """
@@ -11,7 +9,7 @@ defmodule Xmlx do
   @doc """
   Minify XML adding all elements inline whithout spaces or break lines.
   """
-  @spec minify(String) :: String
+  @spec minify(String.t()) :: String.t()
   def minify(xml) do
     Common.minify(xml)
   end
@@ -19,7 +17,7 @@ defmodule Xmlx do
   @doc """
   Parse XML in a structured key/values list.
   """
-  @spec parse(String) :: List
+  @spec parse(String.t()) :: List.t()
   def parse(xml) do
     Parser.parse(xml)
   end
@@ -27,7 +25,7 @@ defmodule Xmlx do
   @doc """
   Return a key/value list with namespace declarations.
   """
-  @spec get_namespaces(String) :: List
+  @spec get_namespaces(String.t()) :: List.t()
   def get_namespaces(xml) do
     Common.get_namespaces(xml)
   end
@@ -35,7 +33,7 @@ defmodule Xmlx do
   @doc """
   Simple search to return a filtered list itens based on attribute or element name.
   """
-  @spec find(List, Atom) :: List
+  @spec find(List.t(), Atom.t()) :: List.t()
   def find(document, filter) do
     Finder.find(document, filter, []);
   end
